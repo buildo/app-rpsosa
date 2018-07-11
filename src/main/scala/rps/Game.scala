@@ -1,15 +1,16 @@
-package rps;
+package rps
 
 object Game {
   def play(): Unit = {
 
     /* Ask for user input */
-    val userMove = readLine(
-      "What's your move?\n" +
-        "0: " + returnMoveIcon("0") + "\n" +
-        "1: " + returnMoveIcon("1") + "\n" +
-        "2: " + returnMoveIcon("2") + "\n\n" +
-        "> ")
+    val userMove = readLine(s"""
+    #What's your move?"
+    #0: ${returnMoveIcon("0")}
+    #1: ${returnMoveIcon("1")}
+    #2: ${returnMoveIcon("2")}
+    #
+    #> """.stripMargin('#'))
 
     val computerMove = generateCPUMove();
 
@@ -37,15 +38,16 @@ object Game {
   }
 
   private def returnMoveIcon(move: String): String = {
+
     if (move == "0") {
-      return "💎"
+      "💎"
     } else if (move == "1") {
-      return "📄"
+      "📄"
     } else if (move == "2") {
-      return "✂️"
+      "✂️"
+    } else {
+      ""
     }
-    return ""
   }
 
 }
-//
