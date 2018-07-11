@@ -14,22 +14,21 @@ useful definitions and methods to craft RPS Moves.
 
 */
 
-
+sealed abstract class RPSMove(val value : String)
 object RPSMoves {
 
-sealed abstract class RPSMove(
-    val icon : String,
-    val value : String) {
+    case object Rock extends RPSMove("0")
+    case object Paper extends RPSMove("1")
+    case object Scissors extends RPSMove("2")
 
-    override def toString = icon
-  }
-
-    case object ROCK extends RPSMove("💎", "0")
-    case object PAPER extends RPSMove("📄", "1")
-    case object SCISSORS extends RPSMove("✂️", "2")
+    def show(m: RPSMove) = m match {
+        case Rock => "💎"
+        case Paper => "📄"
+        case Scissors => "✂️"
+    }
 
     // I need to find a way to obtain this set automagically
-    val setOfMoves: Set[RPSMove] = Set(ROCK, PAPER, SCISSORS)
+    val setOfMoves: Set[RPSMove] = Set(Rock, Paper, Scissors)
 
     def factoryMove(aMoveString: String): Option[RPSMove] = {
         setOfMoves.filter(_.value == aMoveString).headOption

@@ -2,37 +2,54 @@ package rps
 
 import RPSMoves._
 
+
+
 object Game {
   def play(): Unit = {
 
     /* Ask for user input */
     val userMoveString = readLine(s"""
     |What's your move?"
-    |0: ${ROCK.toString}
-    |1: ${PAPER.toString}
-    |2: ${SCISSORS.toString}
+    |0: ${RPSMoves.show(Rock)}
+    |1: ${RPSMoves.show(Paper)}
+    |2: ${RPSMoves.show(Scissors)}
     |
     |> """.stripMargin)
 
     val userMove = RPSMoves.factoryMove(userMoveString)
 
-    if (userMove == None) {
-      println(s"Mmm looks like your move was not legal... 🤔")
-    } else {
 
-    val computerMoveString = generateCPUMove()
-    val computerMove = RPSMoves.factoryMove(computerMoveString)
+    /*
+      RPSMoves.factoryMove(string) returns an instance of an Option,
+      where the instance is either:
 
-    println(s"Your move was:    ${userMove.get.toString}")
-    println(s"The CPU move was: ${computerMove.get.toString}")
+      - An instance of the Scala Some class
+      - An instance of the Scala None class
 
-    /* Compute the outcome */
-    computeGameOutcome(userMove.get, computerMove.get)
+      Because Some and None are both children of Option,
+      my function signature just declares that I am returning an
+      Option that contains some type (such as the RPSMove type shown below).
+      */
+
+    userMove match {
+      case None => println(s"Mmm looks like your move was not legal... 🤔")
+      case Some(userMove) => {
+
+        val computerMove = generateCPUMove()
+
+        println(s"Your move was:    ${RPSMoves.show(userMove)}")
+        println(s"The CPU move was: ${RPSMoves.show(computerMove)}")
+
+        /* Compute the outcome */
+        computeGameOutcome(userMove, computerMove)
+      }
     }
   }
 
-  private def generateCPUMove(): String =
-    scala.util.Random.nextInt(3).toString()
+    private def generateCPUMove(): RPSMove = {
+      import scala.util.Random
+      Random.shuffle(Set(Rock, Paper, Scissors)).head
+    }
 
   private def computeGameOutcome(userMove: RPSMove, cpuMove: RPSMove): Unit = {
 
@@ -46,7 +63,7 @@ object Game {
         */
     (userMove, cpuMove) match {
       case (x,y) if (x == y) => println("It's a draw! 🧐") // I used a "guard"
-      case (ROCK, SCISSORS) | (PAPER, ROCK) | (SCISSORS, PAPER) => println("You Win! 😤") // I used pipe to match multiple conditions
+      case (Rock, Scissors) | (Paper, Rock) | (Scissors, Paper) => println("You Win! 😤") // I used pipe to match multiple conditions
       case _ => println("You Lose! 🤩") // _ stands for the default case
     }
 
