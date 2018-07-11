@@ -1,30 +1,57 @@
 package rps
 
+import RPSMoves._
+
+
+
 object Game {
   def play(): Unit = {
 
     /* Ask for user input */
-    val userMove = readLine(s"""
+    val userMoveString = readLine(s"""
     |What's your move?"
-    |0: ${returnMoveIcon("0")}
-    |1: ${returnMoveIcon("1")}
-    |2: ${returnMoveIcon("2")}
+    |0: ${RPSMoves.show(Rock)}
+    |1: ${RPSMoves.show(Paper)}
+    |2: ${RPSMoves.show(Scissors)}
     |
     |> """.stripMargin)
 
-    val computerMove = generateCPUMove();
+    val userMove = RPSMoves.factoryMove(userMoveString)
 
-    println(s"Your move was:    ${returnMoveIcon(userMove)}")
-    println(s"The CPU move was: ${returnMoveIcon(computerMove)}")
 
-    /* Compute the outcome */
-    computeGameOutcome(userMove, computerMove)
+    /*
+      RPSMoves.factoryMove(string) returns an instance of an Option,
+      where the instance is either:
+
+      - An instance of the Scala Some class
+      - An instance of the Scala None class
+
+      Because Some and None are both children of Option,
+      my function signature just declares that I am returning an
+      Option that contains some type (such as the RPSMove type shown below).
+      */
+
+    userMove match {
+      case None => println(s"Mmm looks like your move was not legal... 🤔")
+      case Some(userMove) => {
+
+        val computerMove = generateCPUMove()
+
+        println(s"Your move was:    ${RPSMoves.show(userMove)}")
+        println(s"The CPU move was: ${RPSMoves.show(computerMove)}")
+
+        /* Compute the outcome */
+        computeGameOutcome(userMove, computerMove)
+      }
+    }
   }
 
-  private def generateCPUMove(): String =
-    scala.util.Random.nextInt(3).toString()
+    private def generateCPUMove(): RPSMove = {
+      import scala.util.Random
+      Random.shuffle(Set(Rock, Paper, Scissors)).head
+    }
 
-  private def computeGameOutcome(userMove: String, cpuMove: String): Unit = {
+  private def computeGameOutcome(userMove: RPSMove, cpuMove: RPSMove): Unit = {
 
     /*  Here I used pattern matching.
         All cases are prioritized by their ordering:
@@ -36,20 +63,12 @@ object Game {
         */
     (userMove, cpuMove) match {
       case (x,y) if (x == y) => println("It's a draw! 🧐") // I used a "guard"
-      case ("1","0") | ("2","1") | ("0","2") => println("You Win! 😤") // I used pipe to match multiple conditions
+      case (Rock, Scissors) | (Paper, Rock) | (Scissors, Paper) => println("You Win! 😤") // I used pipe to match multiple conditions
       case _ => println("You Lose! 🤩") // _ stands for the default case
     }
 
   }
-
-  private def returnMoveIcon(move: String): String = {
-
-    move match {
-      case "0" => "💎"
-      case "1" => "📄"
-      case "2" => "✂️"
-      case _ => "💩"
-    }
-  }
-
 }
+
+
+
