@@ -1,30 +1,40 @@
 package rps
 
+import RPSMoves._
+
 object Game {
   def play(): Unit = {
 
     /* Ask for user input */
-    val userMove = readLine(s"""
+    val userMoveString = readLine(s"""
     |What's your move?"
-    |0: ${returnMoveIcon("0")}
-    |1: ${returnMoveIcon("1")}
-    |2: ${returnMoveIcon("2")}
+    |0: ${ROCK.toString}
+    |1: ${PAPER.toString}
+    |2: ${SCISSORS.toString}
     |
     |> """.stripMargin)
 
-    val computerMove = generateCPUMove();
+    val userMove = RPSMoves.factoryMove(userMoveString)
 
-    println(s"Your move was:    ${returnMoveIcon(userMove)}")
-    println(s"The CPU move was: ${returnMoveIcon(computerMove)}")
+    if (userMove == None) {
+      println(s"Mmm looks like your move was not legal... 🤔")
+    } else {
+
+    val computerMoveString = generateCPUMove()
+    val computerMove = RPSMoves.factoryMove(computerMoveString)
+
+    println(s"Your move was:    ${userMove.get.toString}")
+    println(s"The CPU move was: ${computerMove.get.toString}")
 
     /* Compute the outcome */
-    computeGameOutcome(userMove, computerMove)
+    computeGameOutcome(userMove.get, computerMove.get)
+    }
   }
 
   private def generateCPUMove(): String =
     scala.util.Random.nextInt(3).toString()
 
-  private def computeGameOutcome(userMove: String, cpuMove: String): Unit = {
+  private def computeGameOutcome(userMove: RPSMove, cpuMove: RPSMove): Unit = {
 
     /*  Here I used pattern matching.
         All cases are prioritized by their ordering:
@@ -36,20 +46,12 @@ object Game {
         */
     (userMove, cpuMove) match {
       case (x,y) if (x == y) => println("It's a draw! 🧐") // I used a "guard"
-      case ("1","0") | ("2","1") | ("0","2") => println("You Win! 😤") // I used pipe to match multiple conditions
+      case (ROCK, SCISSORS) | (PAPER, ROCK) | (SCISSORS, PAPER) => println("You Win! 😤") // I used pipe to match multiple conditions
       case _ => println("You Lose! 🤩") // _ stands for the default case
     }
 
   }
-
-  private def returnMoveIcon(move: String): String = {
-
-    move match {
-      case "0" => "💎"
-      case "1" => "📄"
-      case "2" => "✂️"
-      case _ => "💩"
-    }
-  }
-
 }
+
+
+
