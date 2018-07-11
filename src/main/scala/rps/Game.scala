@@ -5,17 +5,17 @@ object Game {
 
     /* Ask for user input */
     val userMove = readLine(s"""
-    #What's your move?"
-    #0: ${returnMoveIcon("0")}
-    #1: ${returnMoveIcon("1")}
-    #2: ${returnMoveIcon("2")}
-    #
-    #> """.stripMargin('#'))
+    |What's your move?"
+    |0: ${returnMoveIcon("0")}
+    |1: ${returnMoveIcon("1")}
+    |2: ${returnMoveIcon("2")}
+    |
+    |> """.stripMargin)
 
     val computerMove = generateCPUMove();
 
-    println("Your move was: " + returnMoveIcon(userMove))
-    println("The CPU move was: " + returnMoveIcon(computerMove))
+    println(s"Your move was:    ${returnMoveIcon(userMove)}")
+    println(s"The CPU move was: ${returnMoveIcon(computerMove)}")
 
     /* Compute the outcome */
     computeGameOutcome(userMove, computerMove)
@@ -25,28 +25,30 @@ object Game {
     scala.util.Random.nextInt(3).toString()
 
   private def computeGameOutcome(userMove: String, cpuMove: String): Unit = {
-    if (userMove == cpuMove) {
-      println("It's a draw! 🧐")
-    } else if (userMove == "0" && cpuMove == "2" ||
-               userMove == "2" && cpuMove == "1" ||
-               userMove == "1" && cpuMove == "0") {
-      println("You Win! 😤")
-    } else {
-      println("You Lose! 🤩")
+
+    /*  Here I used pattern matching.
+        All cases are prioritized by their ordering:
+        e.g.
+        1. case ("0") => action a
+        2. case ("0") => action b
+
+        1 and 2 matches, but action a is executed.
+        */
+    (userMove, cpuMove) match {
+      case (x,y) if (x == y) => println("It's a draw! 🧐") // I used a "guard"
+      case ("1","0") | ("2","1") | ("0","2") => println("You Win! 😤") // I used pipe to match multiple conditions
+      case _ => println("You Lose! 🤩") // _ stands for the default case
     }
 
   }
 
   private def returnMoveIcon(move: String): String = {
 
-    if (move == "0") {
-      "💎"
-    } else if (move == "1") {
-      "📄"
-    } else if (move == "2") {
-      "✂️"
-    } else {
-      ""
+    move match {
+      case "0" => "💎"
+      case "1" => "📄"
+      case "2" => "✂️"
+      case _ => "💩"
     }
   }
 
