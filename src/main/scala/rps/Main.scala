@@ -25,11 +25,15 @@ object WebServerRPS {
         post {
           entity(as[RPSRequest]) { request => /// will unmarshal JSON to RPSRequest
               val result = Game.play(request.userMove)
-              complete(result)
+              result match {
+                case None => complete("")
+                case Some(result) => complete(result)
+              }
+              
           }
         }
       } 
-    } ~  options(complete())
+    } ~  options(complete()) // accepts all OPTIONS
 
     val bindingFuture = Http().bindAndHandle(router, "localhost", 8080)
 

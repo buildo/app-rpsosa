@@ -7,21 +7,18 @@ import io.buildo.enumero.{CaseEnumIndex, CaseEnumSerialization}
 
 
 object Game {
-  def play(userMoveString: String): String = {
+  def play(userMoveString: String): Option[RPSResponse] = {
     /* Ask for user input */
     val userMove = CaseEnumSerialization[RPSMove].caseFromString(userMoveString)
 
     userMove match {
-      case None => "Mmm looks like your move was not legal... 🤔"
+      case None => None
       case Some(userMove) => {
 
         val computerMove = generateCPUMove()
-        //println(s"Your move was:    ${CaseEnumSerialization[RPSMoves].caseToString(userMove)}")
-        //println(s"The CPU move was: ${CaseEnumSerialization[RPSMoves].caseToString(computerMove)}")
-
-        /* Compute the outcome */
         val outcome = computeGameOutcome(userMove, computerMove)
-        outcome
+
+        Some(RPSResponse(CaseEnumSerialization[RPSMove].caseToString(userMove), CaseEnumSerialization[RPSMove].caseToString(computerMove), outcome))
       }
     }
   }
