@@ -1,39 +1,32 @@
 package rps
 
-import RPSMoves._
+import RPSMove._
 import io.buildo.enumero.{CaseEnumIndex, CaseEnumSerialization}
 
 
 
+
 object Game {
-  def play(): Unit = {
-
+  def play(userMoveString: String): String = {
     /* Ask for user input */
-    val userMoveString = readLine(s"""
-    |What's your move?
-    |0: Rock
-    |1: Paper
-    |2: Scissors
-    |
-    |> """.stripMargin)
-
-    val userMove = CaseEnumIndex[RPSMoves].caseFromIndex(userMoveString)
+    val userMove = CaseEnumSerialization[RPSMove].caseFromString(userMoveString)
 
     userMove match {
-      case None => println(s"Mmm looks like your move was not legal... 🤔")
+      case None => "Mmm looks like your move was not legal... 🤔"
       case Some(userMove) => {
 
         val computerMove = generateCPUMove()
-        println(s"Your move was:    ${CaseEnumSerialization[RPSMoves].caseToString(userMove)}")
-        println(s"The CPU move was: ${CaseEnumSerialization[RPSMoves].caseToString(computerMove)}")
+        //println(s"Your move was:    ${CaseEnumSerialization[RPSMoves].caseToString(userMove)}")
+        //println(s"The CPU move was: ${CaseEnumSerialization[RPSMoves].caseToString(computerMove)}")
 
         /* Compute the outcome */
-        computeGameOutcome(userMove, computerMove)
+        val outcome = computeGameOutcome(userMove, computerMove)
+        outcome
       }
     }
   }
 
-    private def generateCPUMove(): RPSMoves = {
+    private def generateCPUMove(): RPSMove = {
       import scala.util.Random
       /* Apparently there is no way of obtaining 
       the set of all enumerators from a CaseEnumIndex
@@ -41,7 +34,7 @@ object Game {
       Random.shuffle(Set(Rock, Paper, Scissors)).head 
     }
 
-  private def computeGameOutcome(userMove: RPSMoves, cpuMove: RPSMoves): Unit = {
+  private def computeGameOutcome(userMove: RPSMove, cpuMove: RPSMove): String = {
 
     /*  Here I used pattern matching.
         All cases are prioritized by their ordering:
@@ -52,9 +45,9 @@ object Game {
         1 and 2 matches, but action a is executed.
         */
     (userMove, cpuMove) match {
-      case (x,y) if (x == y) => println("It's a draw! 🧐") // I used a "guard"
-      case (Rock, Scissors) | (Paper, Rock) | (Scissors, Paper) => println("You Win! 😤") // I used pipe to match multiple conditions
-      case _ => println("You Lose! 🤩") // _ stands for the default case
+      case (x,y) if (x == y) => "Draw"
+      case (Rock, Scissors) | (Paper, Rock) | (Scissors, Paper) => "Win"
+      case default => "Lose"
     }
 
   }
