@@ -1,7 +1,7 @@
 package rps
 
 import RPSMoves._
-import io.buildo.enumero.{CaseEnumIndex}
+import io.buildo.enumero.{CaseEnumIndex, CaseEnumSerialization}
 
 
 
@@ -10,7 +10,7 @@ object Game {
 
     /* Ask for user input */
     val userMoveString = readLine(s"""
-    |What's your move?"
+    |What's your move?
     |0: Rock
     |1: Paper
     |2: Scissors
@@ -24,8 +24,8 @@ object Game {
       case Some(userMove) => {
 
         val computerMove = generateCPUMove()
-        println(s"Your move was:    ${CaseEnumIndex[RPSMoves].caseToIndex(userMove)}")
-        println(s"The CPU move was: ${CaseEnumIndex[RPSMoves].caseToIndex(computerMove)}")
+        println(s"Your move was:    ${CaseEnumSerialization[RPSMoves].caseToString(userMove)}")
+        println(s"The CPU move was: ${CaseEnumSerialization[RPSMoves].caseToString(computerMove)}")
 
         /* Compute the outcome */
         computeGameOutcome(userMove, computerMove)
