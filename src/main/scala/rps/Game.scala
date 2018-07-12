@@ -1,6 +1,7 @@
 package rps
 
 import RPSMoves._
+import io.buildo.enumero.{CaseEnumIndex}
 
 
 
@@ -10,35 +11,21 @@ object Game {
     /* Ask for user input */
     val userMoveString = readLine(s"""
     |What's your move?"
-    |0: ${RPSMoves.show(Rock)}
-    |1: ${RPSMoves.show(Paper)}
-    |2: ${RPSMoves.show(Scissors)}
+    |0: Rock
+    |1: Paper
+    |2: Scissors
     |
     |> """.stripMargin)
 
-    val userMove = RPSMoves.factoryMove(userMoveString)
-
-
-    /*
-      RPSMoves.factoryMove(string) returns an instance of an Option,
-      where the instance is either:
-
-      - An instance of the Scala Some class
-      - An instance of the Scala None class
-
-      Because Some and None are both children of Option,
-      my function signature just declares that I am returning an
-      Option that contains some type (such as the RPSMove type shown below).
-      */
+    val userMove = CaseEnumIndex[RPSMoves].caseFromIndex(userMoveString)
 
     userMove match {
       case None => println(s"Mmm looks like your move was not legal... 🤔")
       case Some(userMove) => {
 
         val computerMove = generateCPUMove()
-
-        println(s"Your move was:    ${RPSMoves.show(userMove)}")
-        println(s"The CPU move was: ${RPSMoves.show(computerMove)}")
+        println(s"Your move was:    ${CaseEnumIndex[RPSMoves].caseToIndex(userMove)}")
+        println(s"The CPU move was: ${CaseEnumIndex[RPSMoves].caseToIndex(computerMove)}")
 
         /* Compute the outcome */
         computeGameOutcome(userMove, computerMove)
@@ -46,12 +33,15 @@ object Game {
     }
   }
 
-    private def generateCPUMove(): RPSMove = {
+    private def generateCPUMove(): RPSMoves = {
       import scala.util.Random
-      Random.shuffle(Set(Rock, Paper, Scissors)).head
+      /* Apparently there is no way of obtaining 
+      the set of all enumerators from a CaseEnumIndex
+      so I am going to recreate everything here.*/
+      Random.shuffle(Set(Rock, Paper, Scissors)).head 
     }
 
-  private def computeGameOutcome(userMove: RPSMove, cpuMove: RPSMove): Unit = {
+  private def computeGameOutcome(userMove: RPSMoves, cpuMove: RPSMoves): Unit = {
 
     /*  Here I used pattern matching.
         All cases are prioritized by their ordering:
