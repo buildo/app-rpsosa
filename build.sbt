@@ -18,8 +18,7 @@ lazy val root = project
       "io.buildo" %% "enumero" % "1.2.1",
       "de.heikoseeberger" %% "akka-http-circe" % "1.21.0"
     ),
-    resolvers ++= Seq(Resolver.bintrayRepo("hseeberger", "maven"),
-                      Resolver.bintrayRepo("buildo", "maven")),
+    resolvers ++= Seq(Resolver.bintrayRepo("buildo", "maven")),
     addCompilerPlugin(
       "org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full)
   )

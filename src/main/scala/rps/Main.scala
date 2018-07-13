@@ -4,7 +4,10 @@ import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.server.Directives._
+import akka.http.scaladsl.server._
 import akka.stream.ActorMaterializer
+import StatusCodes._
+
 import scala.io.StdIn
 
 import de.heikoseeberger.akkahttpcirce.ErrorAccumulatingCirceSupport._
@@ -19,17 +22,29 @@ object WebServerRPS {
     // needed for the future flatMap/onComplete in the end
     implicit val executionContext = system.dispatcher
 
+    implicit def myRejectionHandler =
+      RejectionHandler
+        .newBuilder()
+        .handle {
+          case MalformedRequestContentRejection(message, _) =>
+            complete(
+              HttpResponse(
+                BadRequest,
+                entity =
+                  s"The request content for 'userMove' field was malformed:\nExpected a value between [ 'Rock' | 'Paper' | 'Scissors' ], but got '${message}'"
+              ))
+        }
+        .result()
+
     val router =
       pathPrefix("rps") {
         path("play") {
           post {
             entity(as[Request]) { request => /// will unmarshal JSON to RPSRequest
+              /* In case of failed unmarshalling the JSON request,
+            https://doc.akka.io/docs/akka-http/current/routing-dsl/rejections.html#rejections */
               val result = Game.play(request.userMove)
-              result match {
-                case None         => complete("")
-                case Some(result) => complete(result)
-              }
-
+              complete(result)
             }
           }
         }

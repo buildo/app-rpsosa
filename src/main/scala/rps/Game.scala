@@ -5,25 +5,16 @@ import Result._
 import io.buildo.enumero.{CaseEnumIndex, CaseEnumSerialization}
 
 object Game {
-  def play(userMoveString: String): Option[Response] = {
+  def play(userMove: Move): Response = {
     /* Ask for user input */
-    val userMove = CaseEnumSerialization[Move].caseFromString(userMoveString)
+    val computerMove = generateCPUMove()
+    val outcome = computeGameOutcome(userMove, computerMove)
 
-    userMove match {
-      case None => None
-      case Some(userMove) => {
-
-        val computerMove = generateCPUMove()
-        val outcome = computeGameOutcome(userMove, computerMove)
-
-        Some(
-          Response(
-            userMove,
-            computerMove,
-            outcome
-          ))
-      }
-    }
+    Response(
+      userMove,
+      computerMove,
+      outcome
+    )
   }
 
   private def generateCPUMove(): Move = {
@@ -31,7 +22,7 @@ object Game {
     /* Apparently there is no way of obtaining
       the set of all enumerators from a CaseEnumIndex
       so I am going to recreate everything here.*/
-    Random.shuffle(Set(Rock, Paper, Scissors)).head
+    Random.shuffle(Move.values).head
   }
 
   private def computeGameOutcome(userMove: Move, cpuMove: Move): Result = {
@@ -47,7 +38,7 @@ object Game {
     (userMove, cpuMove) match {
       case (x, y) if (x == y)                                   => Draw
       case (Rock, Scissors) | (Paper, Rock) | (Scissors, Paper) => Win
-      case default                                              => Lose
+      case _                                                    => Lose
     }
 
   }
