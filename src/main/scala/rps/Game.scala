@@ -4,24 +4,40 @@ import Move._
 import Result._
 import io.buildo.enumero.{CaseEnumIndex, CaseEnumSerialization}
 
-object Game {
-  def play(userMove: Move): Response = {
-    /* Ask for user input */
+import scala.concurrent.Future
+import wiro.annotation._
+
+// API definition
+
+@path("rps")
+trait GameApi {
+  @command
+  def play(
+      userMove: Move
+  ): Future[Either[Throwable, Response]]
+}
+
+// API implementation
+class GameApiImpl() extends GameApi {
+  import scala.concurrent.ExecutionContext.Implicits.global
+
+  override def play(
+      userMove: Move
+  ): Future[Either[Throwable, Response]] = Future {
+
     val computerMove = generateCPUMove()
     val outcome = computeGameOutcome(userMove, computerMove)
 
-    Response(
-      userMove,
-      computerMove,
-      outcome
-    )
+    Right(
+      Response(
+        userMove,
+        computerMove,
+        outcome
+      ))
   }
 
   private def generateCPUMove(): Move = {
     import scala.util.Random
-    /* Apparently there is no way of obtaining
-      the set of all enumerators from a CaseEnumIndex
-      so I am going to recreate everything here.*/
     Random.shuffle(Move.values).head
   }
 
