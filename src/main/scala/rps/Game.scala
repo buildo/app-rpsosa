@@ -1,47 +1,31 @@
 package rps
 
-import RPSMoves._
+import Move._
+import Result._
 import io.buildo.enumero.{CaseEnumIndex, CaseEnumSerialization}
 
-
-
 object Game {
-  def play(): Unit = {
-
+  def play(userMove: Move): Response = {
     /* Ask for user input */
-    val userMoveString = readLine(s"""
-    |What's your move?
-    |0: Rock
-    |1: Paper
-    |2: Scissors
-    |
-    |> """.stripMargin)
+    val computerMove = generateCPUMove()
+    val outcome = computeGameOutcome(userMove, computerMove)
 
-    val userMove = CaseEnumIndex[RPSMoves].caseFromIndex(userMoveString)
-
-    userMove match {
-      case None => println(s"Mmm looks like your move was not legal... 🤔")
-      case Some(userMove) => {
-
-        val computerMove = generateCPUMove()
-        println(s"Your move was:    ${CaseEnumSerialization[RPSMoves].caseToString(userMove)}")
-        println(s"The CPU move was: ${CaseEnumSerialization[RPSMoves].caseToString(computerMove)}")
-
-        /* Compute the outcome */
-        computeGameOutcome(userMove, computerMove)
-      }
-    }
+    Response(
+      userMove,
+      computerMove,
+      outcome
+    )
   }
 
-    private def generateCPUMove(): RPSMoves = {
-      import scala.util.Random
-      /* Apparently there is no way of obtaining 
+  private def generateCPUMove(): Move = {
+    import scala.util.Random
+    /* Apparently there is no way of obtaining
       the set of all enumerators from a CaseEnumIndex
       so I am going to recreate everything here.*/
-      Random.shuffle(Set(Rock, Paper, Scissors)).head 
-    }
+    Random.shuffle(Move.values).head
+  }
 
-  private def computeGameOutcome(userMove: RPSMoves, cpuMove: RPSMoves): Unit = {
+  private def computeGameOutcome(userMove: Move, cpuMove: Move): Result = {
 
     /*  Here I used pattern matching.
         All cases are prioritized by their ordering:
@@ -50,15 +34,12 @@ object Game {
         2. case ("0") => action b
 
         1 and 2 matches, but action a is executed.
-        */
+     */
     (userMove, cpuMove) match {
-      case (x,y) if (x == y) => println("It's a draw! 🧐") // I used a "guard"
-      case (Rock, Scissors) | (Paper, Rock) | (Scissors, Paper) => println("You Win! 😤") // I used pipe to match multiple conditions
-      case _ => println("You Lose! 🤩") // _ stands for the default case
+      case (x, y) if (x == y)                                   => Draw
+      case (Rock, Scissors) | (Paper, Rock) | (Scissors, Paper) => Win
+      case _                                                    => Lose
     }
 
   }
 }
-
-
-
