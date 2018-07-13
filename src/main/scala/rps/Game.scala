@@ -6,7 +6,9 @@ import io.buildo.enumero.{CaseEnumIndex, CaseEnumSerialization}
 
 import scala.concurrent.Future
 import wiro.annotation._
-
+import scala.concurrent.ExecutionContext._
+import concurrent._
+import concurrent.duration._
 // API definition
 
 @path("rps")
@@ -18,23 +20,23 @@ trait GameApi {
 }
 
 // API implementation
-class GameApiImpl() extends GameApi {
-  import scala.concurrent.ExecutionContext.Implicits.global
+class GameApiImpl()(implicit ec: ExecutionContext) extends GameApi {
 
   override def play(
       userMove: Move
-  ): Future[Either[Throwable, Response]] = Future {
+  ): Future[Either[Throwable, Response]] =
+    Future {
 
-    val computerMove = generateCPUMove()
-    val outcome = computeGameOutcome(userMove, computerMove)
+      val computerMove = generateCPUMove()
+      val outcome = computeGameOutcome(userMove, computerMove)
 
-    Right(
-      Response(
-        userMove,
-        computerMove,
-        outcome
-      ))
-  }
+      Right(
+        Response(
+          userMove,
+          computerMove,
+          outcome
+        ))
+    }
 
   private def generateCPUMove(): Move = {
     import scala.util.Random

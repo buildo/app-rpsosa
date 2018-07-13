@@ -11,6 +11,7 @@ import akka.http.scaladsl.model.{
   HttpEntity
 }
 import wiro.Config
+import scala.concurrent.ExecutionContext._
 
 import akka.http.scaladsl.model.MediaTypes
 
@@ -28,7 +29,9 @@ object RPSServer extends App with RouterDerivationModule {
 
   implicit def throwableResponse: ToHttpResponse[Throwable] = null
 
-  val gameRouter = deriveRouter[GameApi](new GameApiImpl)
+  val gameApiImpl = new GameApiImpl()(ec)
+
+  val gameRouter = deriveRouter[GameApi](gameApiImpl)
 
   val rpcServer = new HttpRPCServer(
     config = Config("localhost", 8080),
