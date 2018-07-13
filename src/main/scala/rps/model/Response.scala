@@ -1,3 +1,5 @@
 package rps
 
-case class RPSResponse(userMove: String, computerMove: String, result: String)
+import Move._
+import Result._
+case class Response(userMove: Move, computerMove: Move, result: Result)

@@ -14,7 +14,7 @@ The buildo versions of the enumerations are called:
 */
 
 
-@enum trait RPSMove {
+@enum trait Move {
     object Rock
     object Paper
     object Scissors

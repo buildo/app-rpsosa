@@ -1,3 +1,3 @@
 package rps
 
-case class RPSRequest(userMove: String)
+case class Request(userMove: String)

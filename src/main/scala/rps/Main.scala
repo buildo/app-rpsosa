@@ -20,20 +20,20 @@ object WebServerRPS {
     implicit val executionContext = system.dispatcher
 
     val router =
-    pathPrefix("rps") {
-      path("play") {
-        post {
-          entity(as[RPSRequest]) { request => /// will unmarshal JSON to RPSRequest
+      pathPrefix("rps") {
+        path("play") {
+          post {
+            entity(as[Request]) { request => /// will unmarshal JSON to RPSRequest
               val result = Game.play(request.userMove)
               result match {
-                case None => complete("")
+                case None         => complete("")
                 case Some(result) => complete(result)
               }
-              
+
+            }
           }
         }
-      } 
-    } ~  options(complete()) // accepts all OPTIONS
+      } ~ options(complete()) // accepts all OPTIONS
 
     val bindingFuture = Http().bindAndHandle(router, "localhost", 8080)
 
