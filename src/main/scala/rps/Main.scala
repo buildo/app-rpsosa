@@ -29,7 +29,7 @@ object RPSServer extends App with RouterDerivationModule {
 
   implicit def throwableResponse: ToHttpResponse[Throwable] = null
 
-  val gameApiImpl = new GameApiImpl()(ec)
+  val gameApiImpl = new GameApiImpl()
 
   val gameRouter = deriveRouter[GameApi](gameApiImpl)
 

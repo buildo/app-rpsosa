@@ -6,7 +6,6 @@ import io.buildo.enumero.{CaseEnumIndex, CaseEnumSerialization}
 
 import scala.concurrent.Future
 import wiro.annotation._
-import scala.concurrent.ExecutionContext._
 import concurrent._
 import concurrent.duration._
 // API definition
@@ -20,7 +19,7 @@ trait GameApi {
 }
 
 // API implementation
-class GameApiImpl()(implicit ec: ExecutionContext) extends GameApi {
+class GameApiImpl()(implicit ecd: ExecutionContext) extends GameApi {
 
   override def play(
       userMove: Move
