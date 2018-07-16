@@ -29,9 +29,11 @@ object RPSServer extends App with RouterDerivationModule {
 
   implicit def throwableResponse: ToHttpResponse[Throwable] = null
 
-  val gameApiImpl = new GameApiImpl()
+  val gameRepository = new GameRepositoryImpl()
+  val gameService = new GameServiceImpl(gameRepository)
+  val gameController = new GameControllerImpl(gameService)
 
-  val gameRouter = deriveRouter[GameApi](gameApiImpl)
+  val gameRouter = deriveRouter[GameController](gameController)
 
   val rpcServer = new HttpRPCServer(
     config = Config("localhost", 8080),
