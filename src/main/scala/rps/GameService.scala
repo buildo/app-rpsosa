@@ -22,11 +22,11 @@ class GameServiceImpl(gameRepository: GameRepository) extends GameService {
     val computerMove = generateCPUMove()
     val outcome = computeGameOutcome(userMove, computerMove)
     val matchToBeSaved = Match(userMove, computerMove, outcome)
-    gameRepository.saveGameOutcome(matchToBeSaved)
+    gameRepository.saveGameOutcome("lastMatch", matchToBeSaved)
   }
 
   override def getLastGame(): Option[Match] = {
-    gameRepository.loadGameOutcome()
+    gameRepository.loadGameOutcome("lastMatch")
   }
 
   private def generateCPUMove(): Move = {

@@ -8,10 +8,11 @@ import scala.collection.concurrent.TrieMap
 trait GameRepository {
 
   def saveGameOutcome(
+      theId: String,
       theMatch: Match
   ): Unit;
 
-  def loadGameOutcome(): Option[Match];
+  def loadGameOutcome(theId: String): Option[Match];
 }
 
 class GameRepositoryImpl() extends GameRepository {
@@ -19,12 +20,13 @@ class GameRepositoryImpl() extends GameRepository {
   private val memory = TrieMap.empty[String, Match]
 
   override def saveGameOutcome(
+      theId: String,
       theMatch: Match
   ): Unit = {
-    memory.put("lastMatch", theMatch)
+    memory.put(theId, theMatch)
   }
 
-  override def loadGameOutcome(): Option[Match] = {
-    memory.get("lastMatch")
+  override def loadGameOutcome(theId: String): Option[Match] = {
+    memory.get(theId)
   }
 }
