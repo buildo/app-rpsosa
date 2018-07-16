@@ -3,39 +3,31 @@ package rps
 import Move._
 import Result._
 import io.buildo.enumero.{CaseEnumIndex, CaseEnumSerialization}
-
-import scala.concurrent.Future
 import wiro.annotation._
-import concurrent._
-import concurrent.duration._
-// API definition
 
-@path("rps")
-trait GameApi {
-  @command
+trait GameService {
+
   def play(
       userMove: Move
-  ): Future[Either[Throwable, Response]]
+  ): Unit;
+
+  def getLastGame(): Option[Match];
 }
 
-// API implementation
-class GameApiImpl()(implicit ecd: ExecutionContext) extends GameApi {
+class GameServiceImpl(gameRepository: GameRepository) extends GameService {
 
   override def play(
       userMove: Move
-  ): Future[Either[Throwable, Response]] =
-    Future {
+  ): Unit = {
+    val computerMove = generateCPUMove()
+    val outcome = computeGameOutcome(userMove, computerMove)
+    val matchToBeSaved = Match(userMove, computerMove, outcome)
+    gameRepository.saveGameOutcome("lastMatch", matchToBeSaved)
+  }
 
-      val computerMove = generateCPUMove()
-      val outcome = computeGameOutcome(userMove, computerMove)
-
-      Right(
-        Response(
-          userMove,
-          computerMove,
-          outcome
-        ))
-    }
+  override def getLastGame(): Option[Match] = {
+    gameRepository.loadGameOutcome("lastMatch")
+  }
 
   private def generateCPUMove(): Move = {
     import scala.util.Random
